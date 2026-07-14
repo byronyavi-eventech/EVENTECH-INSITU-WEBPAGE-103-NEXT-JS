@@ -48,7 +48,7 @@ const Step1 = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Giro de la Empresa *
+            Nombre de la Empresa *
           </label>
           <input
             {...register("giroEmpresa")}
