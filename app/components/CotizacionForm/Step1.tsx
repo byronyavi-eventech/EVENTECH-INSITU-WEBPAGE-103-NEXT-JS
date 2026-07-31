@@ -48,7 +48,7 @@ const Step1 = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Giro de la Empresa *
+            Nombre de la Empresa *
           </label>
           <input
             {...register("giroEmpresa")}
@@ -69,27 +69,11 @@ const Step1 = () => {
           <input
             {...register("nombreContacto")}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
-            placeholder="Ej: Juan"
+            placeholder="Ej: Juan Pérez González"
           />
           {errors.nombreContacto && (
             <p className="text-red-500 text-xs mt-1">
               {errors.nombreContacto.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Apellidos de Contacto *
-          </label>
-          <input
-            {...register("apellidosContacto")}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
-            placeholder="Ej: Pérez González"
-          />
-          {errors.apellidosContacto && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.apellidosContacto.message}
             </p>
           )}
         </div>

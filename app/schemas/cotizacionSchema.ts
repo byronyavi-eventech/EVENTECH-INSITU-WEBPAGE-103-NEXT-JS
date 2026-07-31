@@ -28,12 +28,7 @@ export const cotizacionSchema = z.object({
     .string()
     .trim()
     .min(2, "Mínimo 2 caracteres")
-    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "Solo se permiten letras")
-    .transform(capitalizeWords),
-  apellidosContacto: z
-    .string()
-    .trim()
-    .min(2, "Mínimo 2 caracteres")
+    .max(255, "Máximo 255 caracteres")
     .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "Solo se permiten letras")
     .transform(capitalizeWords),
   celularContacto: z
