@@ -73,7 +73,7 @@ const SuccessScreen = ({
           <SummaryRow
             icon={<User size={13} />}
             label="Contacto"
-            value={`${data.nombreContacto} ${data.apellidosContacto}`}
+            value={data.nombreContacto}
           />
           <SummaryRow
             icon={<Phone size={13} />}
@@ -270,7 +270,6 @@ const CotizacionForm = () => {
         "giroEmpresa",
         "rutEmpresa",
         "nombreContacto",
-        "apellidosContacto",
         "celularContacto",
         "emailContacto",
         "direccionEmpresa",
