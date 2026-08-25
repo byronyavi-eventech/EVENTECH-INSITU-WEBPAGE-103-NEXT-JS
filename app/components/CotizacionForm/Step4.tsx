@@ -164,7 +164,6 @@ const Step4 = () => {
       subarea: item.subarea,
       ensayo: item.ensayo,
       cantidad: 1,
-      visitas: 1,
     });
     setQuery("");
     setShowDropdown(false);
@@ -175,7 +174,7 @@ const Step4 = () => {
     subarea: string,
     ensayo: string,
   ) => {
-    append({ area, subarea, ensayo, cantidad: 1, visitas: 1 });
+    append({ area, subarea, ensayo, cantidad: 1 });
   };
 
   const toggleArea = (name: string) =>
@@ -192,6 +191,32 @@ const Step4 = () => {
         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
           {fields.length} seleccionado{fields.length !== 1 ? "s" : ""}
         </span>
+      </div>
+
+      {/* ── Cantidad de Visitas a Terreno (global, toda la cotización) ── */}
+      <div className="flex flex-wrap items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+        <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+          Cantidad de Visitas a Terreno *
+        </label>
+        <select
+          {...register("visitasTotales", { valueAsNumber: true })}
+          className="w-20 px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white transition-colors text-sm"
+        >
+          {[1, 2, 3, 4, 5].map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-gray-400">
+          En cuántas visitas a terreno se realizarán todos los ensayos de esta
+          cotización.
+        </p>
+        {errors.visitasTotales && (
+          <p className="text-red-500 text-xs w-full">
+            {errors.visitasTotales.message}
+          </p>
+        )}
       </div>
 
       {/* ── Buscador ── */}
@@ -325,7 +350,7 @@ const Step4 = () => {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 border-t border-gray-100 pt-3">
+                <div className="grid grid-cols-1 gap-3 border-t border-gray-100 pt-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">
                       Cantidad de Ensayos *
@@ -341,24 +366,6 @@ const Step4 = () => {
                     {errors.ensayos?.[index]?.cantidad && (
                       <p className="text-red-500 text-xs mt-1">
                         {errors.ensayos[index]?.cantidad?.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Cantidad de Visitas *
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      {...register(`ensayos.${index}.visitas` as const, {
-                        valueAsNumber: true,
-                      })}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors text-sm"
-                    />
-                    {errors.ensayos?.[index]?.visitas && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.ensayos[index]?.visitas?.message}
                       </p>
                     )}
                   </div>

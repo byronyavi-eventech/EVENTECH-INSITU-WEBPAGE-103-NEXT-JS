@@ -159,9 +159,15 @@ const SuccessScreen = ({
               Ensayos Solicitados
             </h3>
           </div>
-          <span className="text-xs font-medium text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded-full">
-            {data.ensayos.length} ensayo{data.ensayos.length !== 1 ? "s" : ""}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded-full">
+              {data.ensayos.length} ensayo{data.ensayos.length !== 1 ? "s" : ""}
+            </span>
+            <span className="text-xs font-medium text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded-full">
+              {data.visitasTotales} visita{data.visitasTotales !== 1 ? "s" : ""}{" "}
+              a terreno
+            </span>
+          </div>
         </div>
         <ul className="divide-y divide-gray-100">
           {data.ensayos.map((e, i) => (
@@ -175,22 +181,11 @@ const SuccessScreen = ({
                   {e.area.split(" - ")[1] ?? e.area} · {e.subarea}
                 </p>
               </div>
-              <div className="flex gap-3 shrink-0 text-right">
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">
-                    {e.cantidad}
-                  </p>
-                  <p className="text-xs text-gray-400">ensayo{e.cantidad !== 1 ? "s" : ""}</p>
-                </div>
-                <div className="w-px bg-gray-200" />
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">
-                    {e.visitas}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    visita{e.visitas !== 1 ? "s" : ""}
-                  </p>
-                </div>
+              <div className="shrink-0 text-right">
+                <p className="text-sm font-semibold text-gray-800">
+                  {e.cantidad}
+                </p>
+                <p className="text-xs text-gray-400">ensayo{e.cantidad !== 1 ? "s" : ""}</p>
               </div>
             </li>
           ))}
@@ -256,6 +251,7 @@ const CotizacionForm = () => {
       comunaEmpresa: "",
       comunaObra: "",
       ensayos: [],
+      visitasTotales: 1,
     },
   });
 
@@ -312,12 +308,26 @@ const CotizacionForm = () => {
   const onSubmit = async (data: CotizacionFormData) => {
     setIsSubmitting(true);
     try {
+      // El backend todavía exige "visitas" por línea de ensayo (input de su
+      // fórmula de precio: precio × cantidad × visitas — ver comentario en
+      // cotizacion_detalle.cantidadVisitas del schema del backend). El
+      // formulario ya no pide ese dato por ensayo — se espeja acá el valor
+      // global visitasTotales que sí eligió el usuario, para no pedirlo dos
+      // veces ni romper el cálculo de precio existente.
+      const payload = {
+        ...data,
+        ensayos: data.ensayos.map((e) => ({
+          ...e,
+          visitas: data.visitasTotales,
+        })),
+      };
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL || ""}/api/quotations/web`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(payload),
         },
       );
 

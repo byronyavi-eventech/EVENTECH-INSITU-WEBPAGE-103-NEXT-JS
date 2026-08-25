@@ -109,9 +109,13 @@ export const cotizacionSchema = z.object({
       subarea: z.string().min(1, "Seleccione sub área"),
       ensayo: z.string().min(1, "Seleccione ensayo"),
       cantidad: z.coerce.number().min(1, "Mínimo 1"),
-      visitas: z.coerce.number().min(1, "Mínimo 1"),
     }),
   ),
+
+  // Cantidad de visitas a terreno para TODA la cotización (1-5). Reemplaza el
+  // viejo campo "visitas" por ensayo individual — ver Regla Transversal del
+  // flujo de Programación de Ensayos.
+  visitasTotales: z.coerce.number().int().min(1, "Mínimo 1").max(5, "Máximo 5"),
 });
 
 export type CotizacionFormData = z.infer<typeof cotizacionSchema>;
