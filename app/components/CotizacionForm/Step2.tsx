@@ -8,6 +8,7 @@ const Step2 = () => {
     formState: { errors },
     setValue,
     register,
+    trigger,
   } = useFormContext<CotizacionFormData>();
   const regionSeleccionada = useWatch({ control, name: "regionObra" });
   const comunasDisponibles = regionSeleccionada
@@ -39,7 +40,7 @@ const Step2 = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nombre del Mandante *
+            Nombre del Mandante / Propietario *
           </label>
           <input
             {...register("nombreMandante")}
@@ -207,7 +208,9 @@ const Step2 = () => {
           </label>
           <input
             type="email"
-            {...register("correoEncargado")}
+            {...register("correoEncargado", {
+              onBlur: () => trigger("correoEncargado"),
+            })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
             placeholder="Ej: carlos.silva@empresa.cl"
           />
@@ -223,7 +226,9 @@ const Step2 = () => {
             Teléfono del Encargado *
           </label>
           <input
-            {...register("telefonoEncargado")}
+            {...register("telefonoEncargado", {
+              onBlur: () => trigger("telefonoEncargado"),
+            })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
             placeholder="Ej: +569 8765 4321"
           />

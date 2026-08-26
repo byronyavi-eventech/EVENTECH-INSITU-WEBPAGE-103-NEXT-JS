@@ -1,15 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
 import type { CotizacionFormData } from "./CotizacionForm";
-import {
-  Search,
-  Plus,
-  Trash2,
-  ChevronDown,
-  ChevronRight,
-  FlaskConical,
-  X,
-} from "lucide-react";
+import { Search, Plus, Trash2, FlaskConical, X } from "lucide-react";
 import { ensayosData } from "../../data/ensayos";
 
 // alias de los ensayos
@@ -128,8 +120,6 @@ ensayosData.forEach((area, i) => {
 const Step4 = () => {
   const [query, setQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [openAreas, setOpenAreas] = useState<Record<string, boolean>>({});
-  const [openSubareas, setOpenSubareas] = useState<Record<string, boolean>>({});
   const searchRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -168,20 +158,6 @@ const Step4 = () => {
     setQuery("");
     setShowDropdown(false);
   };
-
-  const handleAddFromCatalog = (
-    area: string,
-    subarea: string,
-    ensayo: string,
-  ) => {
-    append({ area, subarea, ensayo, cantidad: 1 });
-  };
-
-  const toggleArea = (name: string) =>
-    setOpenAreas((p) => ({ ...p, [name]: !p[name] }));
-
-  const toggleSubarea = (key: string) =>
-    setOpenSubareas((p) => ({ ...p, [key]: !p[key] }));
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -375,131 +351,6 @@ const Step4 = () => {
           })}
         </div>
       )}
-
-      {/*   Catálogo por área (acordeones) */}
-      <div>
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-          — O explorar por área —
-        </p>
-        <div className="space-y-2">
-          {ensayosData.map((area) => {
-            const color = areaColorMap.get(area.nombre) ?? AREA_COLORS[0];
-            const isAreaOpen = !!openAreas[area.nombre];
-            const totalEnsayos = area.subareas.reduce(
-              (acc, sa) => acc + sa.ensayos.length,
-              0,
-            );
-
-            return (
-              <div
-                key={area.nombre}
-                className="border border-gray-200 rounded-xl overflow-hidden"
-              >
-                {/* Cabecera del área */}
-                <button
-                  type="button"
-                  onClick={() => toggleArea(area.nombre)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className={`w-2 h-2 rounded-full ${color.dot}`} />
-                    <span className="text-sm font-semibold text-gray-700">
-                      {area.nombre}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      ({totalEnsayos} ensayos)
-                    </span>
-                  </div>
-                  {isAreaOpen ? (
-                    <ChevronDown size={16} className="text-gray-400 shrink-0" />
-                  ) : (
-                    <ChevronRight
-                      size={16}
-                      className="text-gray-400 shrink-0"
-                    />
-                  )}
-                </button>
-
-                {/* Subareas */}
-                {isAreaOpen && (
-                  <div className="divide-y divide-gray-100">
-                    {area.subareas.map((subarea) => {
-                      const subareaKey = `${area.nombre}::${subarea.nombre}`;
-                      const isSubOpen = !!openSubareas[subareaKey];
-
-                      return (
-                        <div key={subarea.nombre}>
-                          <button
-                            type="button"
-                            onClick={() => toggleSubarea(subareaKey)}
-                            className="w-full flex items-center justify-between px-5 py-2.5 bg-white hover:bg-gray-50 transition-colors text-left"
-                          >
-                            <span className="text-xs font-medium text-gray-600">
-                              {subarea.nombre}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-gray-400">
-                                {subarea.ensayos.length}
-                              </span>
-                              {isSubOpen ? (
-                                <ChevronDown
-                                  size={14}
-                                  className="text-gray-400"
-                                />
-                              ) : (
-                                <ChevronRight
-                                  size={14}
-                                  className="text-gray-400"
-                                />
-                              )}
-                            </div>
-                          </button>
-
-                          {/* Lista de ensayos */}
-                          {isSubOpen && (
-                            <ul className="bg-gray-50 px-5 py-2 space-y-1">
-                              {subarea.ensayos.map((ensayo) => (
-                                <li
-                                  key={ensayo.nombre}
-                                  className="flex items-center justify-between gap-3 py-1.5 group"
-                                >
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-medium text-gray-700">
-                                      {ensayo.nombre}
-                                    </p>
-                                    {ensayo.norma !== "N/A" && (
-                                      <p className="text-xs text-gray-400 truncate">
-                                        {ensayo.norma}
-                                      </p>
-                                    )}
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleAddFromCatalog(
-                                        area.nombre,
-                                        subarea.nombre,
-                                        ensayo.nombre,
-                                      )
-                                    }
-                                    className="flex items-center gap-1 text-xs font-medium text-primary-hover bg-primary/10 hover:bg-primary/20 px-2.5 py-1 rounded-lg transition-colors shrink-0 opacity-0 group-hover:opacity-100"
-                                  >
-                                    <Plus size={12} /> Agregar
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Validación global: al menos 1 ensayo */}
       {errors.ensayos && !Array.isArray(errors.ensayos) && (
