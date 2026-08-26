@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
@@ -24,6 +24,10 @@ import {
   cotizacionSchema,
   type CotizacionFormData,
 } from "../../schemas/cotizacionSchema";
+import {
+  saveFormDataToStorage,
+  loadFormDataFromStorage,
+} from "../../utils/formStorage";
 export type { CotizacionFormData };
 
 const steps = [
@@ -35,9 +39,11 @@ const steps = [
 // Pantalla de éxito con sumario
 const SuccessScreen = ({
   data,
+  numeroCotizacion,
   onReset,
 }: {
   data: CotizacionFormData;
+  numeroCotizacion: string;
   onReset: () => void;
 }) => {
   return (
@@ -48,11 +54,14 @@ const SuccessScreen = ({
           <CheckCircle2 className="w-9 h-9 text-green-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900">
-          ¡Cotización Solicitada con Éxito!
+          Solicitud de Cotización Generada
         </h2>
-        <p className="text-gray-500 text-sm mt-1 max-w-sm">
-          Nuestro equipo revisará tu solicitud y se pondrá en contacto a la
-          brevedad.
+        <p className="text-gray-500 text-sm mt-1 max-w-md">
+          Se ha generado la Solicitud de cotización N°{" "}
+          <strong>{numeroCotizacion}</strong> de modo exitoso. Nuestro equipo
+          revisará tu solicitud y/o se pondrá en contacto al celular del
+          cotizante y te enviaremos la cotización al correo{" "}
+          {data.emailContacto}
         </p>
       </div>
 
@@ -111,7 +120,7 @@ const SuccessScreen = ({
           />
           <SummaryRow
             icon={<Building2 size={13} />}
-            label="Mandante"
+            label="Mandante / Propietario"
             value={data.nombreMandante}
           />
           <SummaryRow
@@ -242,6 +251,7 @@ const CotizacionForm = () => {
   const [submittedData, setSubmittedData] = useState<CotizacionFormData | null>(
     null,
   );
+  const [numeroCotizacion, setNumeroCotizacion] = useState<string>("");
 
   const methods = useForm({
     resolver: zodResolver(cotizacionSchema),
@@ -255,7 +265,26 @@ const CotizacionForm = () => {
     },
   });
 
-  const { handleSubmit, trigger, reset } = methods;
+  const { handleSubmit, trigger, reset, setValue } = methods;
+
+  // Autocompleta datos de contacto/empresa guardados de una cotización
+  // anterior en este mismo navegador (localStorage). Campos quedan
+  // editables — solo se precargan, no se bloquean.
+  const applyStoredContactData = () => {
+    const stored = loadFormDataFromStorage();
+    if (!stored) return;
+    (Object.keys(stored) as (keyof typeof stored)[]).forEach((field) => {
+      const value = stored[field];
+      if (value) {
+        setValue(field, value, { shouldValidate: false, shouldDirty: false });
+      }
+    });
+  };
+
+  useEffect(() => {
+    applyStoredContactData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const nextStep = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -302,7 +331,9 @@ const CotizacionForm = () => {
   const handleReset = () => {
     reset();
     setSubmittedData(null);
+    setNumeroCotizacion("");
     setCurrentStep(1);
+    applyStoredContactData();
   };
 
   const onSubmit = async (data: CotizacionFormData) => {
@@ -332,6 +363,9 @@ const CotizacionForm = () => {
       );
 
       if (response.ok) {
+        const body = await response.json().catch(() => null);
+        setNumeroCotizacion(body?.data?.numeroCotizacion ?? "");
+        saveFormDataToStorage(data);
         setSubmittedData(data);
       } else {
         const errorBody = await response.json().catch(() => ({}));
@@ -349,7 +383,13 @@ const CotizacionForm = () => {
   };
 
   if (submittedData) {
-    return <SuccessScreen data={submittedData} onReset={handleReset} />;
+    return (
+      <SuccessScreen
+        data={submittedData}
+        numeroCotizacion={numeroCotizacion}
+        onReset={handleReset}
+      />
+    );
   }
 
   return (
