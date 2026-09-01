@@ -319,9 +319,9 @@ function PagoUploadContent() {
             Adjunta tus Comprobantes de Pago
           </h1>
           <p className="text-sm text-gray-500 leading-relaxed">
-            Para confirmar tu cotización, adjunta el/los comprobantes de
-            depósito o transferencia bancaria. Formatos aceptados: PDF, JPG,
-            PNG. Máx. 10 MB por archivo.
+            Para confirmar tu cotización adjunta tus comprobantes de pago con
+            transferencia bancaria considerando el tipo de pago que tiene según
+            la cotización y la guia de despacho
           </p>
         </div>
 
