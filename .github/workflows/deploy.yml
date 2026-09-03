@@ -3,7 +3,7 @@ name: Build & Deploy Landing
 on:
   push:
     branches:
-      - master  # → Production environment
+      - master # → Production environment
       - staging # → Testing / UAT environment
 
 env:
@@ -55,7 +55,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            NEXT_PUBLIC_API_URL=${{ secrets.PROD_API_URL }}
+            NEXT_PUBLIC_API_URL=https://sistemagestionpamline.com
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
